@@ -2,26 +2,31 @@ const express = require('express');
 const mysql = require('mysql2');
 const multer = require('multer');
 const upload = multer();
+const bodyParser = require('body-parser');
 const path = require('path');
+const authRoutes = require('./routes/authRoutes');
 const app = express();
-const dbConfig = {
-    host: "127.127.126.50",
-    user: "root",
-    password: "",
-    database: "wishlist"
-}
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(path.join(__dirname, 'public')));
-
+// Routes
+app.use('/api/auth', authRoutes);
 app.get('/',(req, res)=>{
     res.sendFile(path.join(__dirname, 'public', 'main.html'));
 });
-app.get('/getWishes', (req, res)=>{
+app.get('/register', (req, res)=>{
+    res.sendFile(__dirname + '/public/register.html');
+});
+app.get('/login', (req, res)=>{
+  res.sendFile(__dirname + '/public/login.html');
+});
+/*app.get('/getWishes', (req, res)=>{
     const connection =  mysql.createConnection(dbConfig);
     connection.query(`SELECT * FROM wishes`, (err, results)=>{
         res.json(results);
     });
     connection.end();
-})
+})*/
 app.post('/addWish', upload.any(), (req, res)=>{
     try {
         const name = req.body.name;
@@ -36,6 +41,6 @@ app.post('/addWish', upload.any(), (req, res)=>{
     }
 });
 
-app.listen(3000, ()=>{
-    console.log("Сервер запущен! http://localhost:3000");
+app.listen(process.env.PORT, ()=>{
+    console.log("Сервер запущен! http://localhost:"+process.env.PORT);
 })
