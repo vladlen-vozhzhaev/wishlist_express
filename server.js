@@ -5,20 +5,33 @@ const upload = multer();
 const bodyParser = require('body-parser');
 const path = require('path');
 const authRoutes = require('./routes/authRoutes');
+const exphbs = require('express-handlebars');
 const app = express();
+
+app.engine('hbs', exphbs.engine({
+    extname: '.hbs',
+    defaultLayout: 'main',
+    layoutsDir: path.join(__dirname, 'views/layouts')
+}))
+app.set('view engine', 'hbs');
+app.set('views', path.join(__dirname, 'views'));
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(path.join(__dirname, 'public')));
 // Routes
 app.use('/api/auth', authRoutes);
 app.get('/',(req, res)=>{
-    res.sendFile(path.join(__dirname, 'public', 'main.html'));
+    res.render('main');
 });
+app.get('/profile', (req, res)=>{
+    res.render('profile');
+})
 app.get('/register', (req, res)=>{
-    res.sendFile(__dirname + '/public/register.html');
+    res.render('register');
 });
 app.get('/login', (req, res)=>{
-  res.sendFile(__dirname + '/public/login.html');
+  res.render('login');
 });
 /*app.get('/getWishes', (req, res)=>{
     const connection =  mysql.createConnection(dbConfig);

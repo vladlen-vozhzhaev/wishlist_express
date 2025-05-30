@@ -1,0 +1,32 @@
+<div class="container">
+    <h1>Добро пожаловать <span id="username"></span>!</h1>
+    <p><strong>Email: </strong><span id="email"></span></p>
+    <p><strong>Дата регистрации: </strong><span id="createdAt"></span></p>
+    <script>
+        function getUserData(){
+            const token = localStorage.getItem('token');
+            if(!token){
+                location.href = "/login";
+                return;
+            }
+            fetch('/api/auth/getUser', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            }).then(response=>{
+                if(!response.ok){
+                    throw new Error("Ошибка авторизации");
+                }
+                return response.json();
+            }).then(user=>{
+                document.getElementById('username').innerText = user.username;
+                document.getElementById('email').innerText = user.email;
+                document.getElementById('createdAt').innerText = new Date(user.created_at).toLocaleString();
+            }).catch(error=>{
+                console.log(error);
+                location.href = "/login";
+            });
+        }
+        getUserData();
+    </script>
+</div>
